@@ -5,7 +5,7 @@ $(info Compiler: $(CC) [$(shell which $(CC))])
 INCLUDE    = -Iinclude -I/opt/otf2/include -I/ddn/data/$(USER)/local/include
 NOWARN     = -Wno-unused-function -Wno-unused-variable 
 CFLAGS     = -Wall -Werror $(NOWARN) $(INCLUDE)
-LDFLAGS    = -Llib/ -L/opt/otf2/lib -L/ddn/data/$(USER)/local/lib -Wl,-rpath=`pwd -P`/lib/,-rpath=/ddn/data/$(USER)/local/lib
+LDFLAGS    = -Llib/ -L/opt/otf2/lib -L/ddn/data/$(USER)/local/lib -Wl,-rpath=`pwd -P`/lib/,-rpath=/ddn/data/$(USER)/local/lib -L/path/to/llvm/lib
 OTTER_DEFS =
 DTYPE_DEFS = -DDA_LEN=$(OTTER_DEFAULT_ARRAY_LENGTH) -DDA_INC=$(OTTER_DEFAULT_ARRAY_INCREMENT)
 TRACE_DEFS =
@@ -35,9 +35,11 @@ DTYPEHEAD  = $(wildcard include/otter-datatypes/*.h)    $(COMMON_H)
 OMPSRC     = $(wildcard src/otter-demo/*c)
 OMPEXE     = $(patsubst src/otter-demo/omp-%.c, omp-%, $(OMPSRC))
 OMPSRC_CPP = $(wildcard src/otter-demo/*.cpp)
+OMPSRC_F90 = $(wildcard src/otter-demo/*.F90)
 OMPEXE_CPP = $(patsubst src/otter-demo/omp-%.cpp, omp-%, $(OMPSRC_CPP))
+OMPEXE_F90 = $(patsubst src/otter-demo/omp-%.F90, omp-%, $(OMPSRC_F90))
 
-BINS = $(OTTER) $(LIBDTYPE) $(LIBTRACE) $(OMPEXE) $(OMPEXE_CPP)
+BINS = $(OTTER) $(LIBDTYPE) $(LIBTRACE) $(OMPEXE) $(OMPEXE_CPP) $(OMPEXE_F90)
 
 .PHONY: all clean cleanfiles run
 
@@ -56,6 +58,11 @@ $(OMPEXE): $(OMPSRC)
 $(OMPEXE_CPP): $(OMPSRC_CPP)
 	@echo COMPILING: $@
 	$(CXX) $(CFLAGS) $(DEBUG) -fopenmp src/otter-demo/$@.cpp -o $@
+	@echo $@ links to `ldd $@ | grep "[lib|libi|libg]omp"`
+
+$(OMPEXE_F90) : $(OMPSRC_F90)
+	@echo COMPILING: $@
+	$(F90) $(CFLAGS) $(DEBUG) -fopenmp src/otter-demo/$@.F90 -o $@ $(LDFLAGS) -lomp
 	@echo $@ links to `ldd $@ | grep "[lib|libi|libg]omp"`
 
 ### Otter as a dynamic tool to be loaded by the runtime
