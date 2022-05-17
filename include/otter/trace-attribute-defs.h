@@ -37,6 +37,8 @@ INCLUDE_LABEL(flag,  false )
 
 /* Unique ID attributes */
 INCLUDE_ATTRIBUTE(OTF2_TYPE_UINT64, unique_id, "unique ID of a task, parallel region or thread")
+INCLUDE_ATTRIBUTE(OTF2_TYPE_UINT64, prior_task_id, "unique ID of a task suspended at a task-scheduling point")
+INCLUDE_ATTRIBUTE(OTF2_TYPE_UINT64, next_task_id, "unique ID of a task resumed at a task-scheduling point")
 INCLUDE_ATTRIBUTE(OTF2_TYPE_UINT64, encountering_task_id, "unique ID of the task that encountered this region")
 
 /* Attributes relating to parallel regions */
@@ -66,7 +68,7 @@ INCLUDE_LABEL(event_type,  workshare_end  )
 INCLUDE_LABEL(event_type,  sync_begin     )
 INCLUDE_LABEL(event_type,  sync_end       )
 INCLUDE_LABEL(event_type,  task_create    )
-INCLUDE_LABEL(event_type,  task_schedule  )
+INCLUDE_LABEL(event_type,  task_switch    )
 INCLUDE_LABEL(event_type,  task_enter     )
 INCLUDE_LABEL(event_type,  task_leave     )
 INCLUDE_LABEL(event_type,  master_begin   )
@@ -102,6 +104,7 @@ INCLUDE_LABEL(thread_type,  initial)
 INCLUDE_LABEL(thread_type,  worker )
 
 /* region type - parallel, workshare, sync, task */
+INCLUDE_ATTRIBUTE(OTF2_TYPE_STRING, next_task_region_type, "region type of a task resumed at a task-scheduling point")
 INCLUDE_ATTRIBUTE(OTF2_TYPE_STRING, region_type, "region type")
 /* generic region types */
 INCLUDE_LABEL(region_type, parallel)
@@ -138,6 +141,11 @@ INCLUDE_LABEL(prior_task_status,  detach        )
 INCLUDE_LABEL(prior_task_status,  early_fulfil  )
 INCLUDE_LABEL(prior_task_status,  late_fulfil   )
 INCLUDE_LABEL(prior_task_status,  switch        )
+
+/* task source location */
+INCLUDE_ATTRIBUTE(OTF2_TYPE_UINT32, source_line_number, "the line number of the construct which caused this region to be created")
+INCLUDE_ATTRIBUTE(OTF2_TYPE_STRING, source_file_name, "the source file containing the construct which caused this region to be created")
+INCLUDE_ATTRIBUTE(OTF2_TYPE_STRING, source_func_name, "the name of the function containing the construct which caused this region to be created")
 
 #undef INCLUDE_LABEL
 #undef INCLUDE_ATTRIBUTE

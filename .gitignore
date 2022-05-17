@@ -16,6 +16,7 @@
 /build*/
 /trace/
 /scratch/
+/reports/
 /.vscode/
 
 /workspace.code-workspace
@@ -23,3 +24,5 @@
 !/docs/*.svg
 
 /include/otter/otter-version.h
+
+/*.sh
